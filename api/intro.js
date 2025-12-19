@@ -1,12 +1,13 @@
 export default async function handler(req, res) {
   try {
+    const API_KEY = process.env.GEMINI_API_KEY;
+
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + process.env.GEMINI_API_KEY,
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          // System behavior settings
           system_instruction: {
             parts: [
               {
@@ -19,7 +20,6 @@ Keep the tone gentle, neutral, and non-political.
             ]
           },
 
-          // User request
           contents: [
             {
               role: "user",
@@ -29,14 +29,18 @@ Keep the tone gentle, neutral, and non-political.
                 }
               ]
             }
-          ]
+          ],
+
+          generationConfig: {
+            temperature: 0.4
+          }
         })
       }
     );
 
     const data = await response.json();
 
-    const intro =
+    const intro = 
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "This tool encourages calm reflection before sharing information.";
 
