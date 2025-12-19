@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT_ID; // <-- ADD THIS
+    const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT_ID; gen-lang-client-0130748957
     const API_KEY = process.env.GEMINI_API_KEY;
 
     const endpoint = `https://us-central1-aiplatform.googleapis.com/v1/projects/${PROJECT_ID}/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
