@@ -6,11 +6,26 @@ export default async function handler(req, res) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          // System behavior settings
+          system_instruction: {
+            parts: [
+              {
+                text: `
+Write a short, calm introduction (2–3 sentences) for a public tool that encourages people to reflect before sharing information.
+Respond in the same language as the user's input.
+Keep the tone gentle, neutral, and non-political.
+                `
+              }
+            ]
+          },
+
+          // User request
           contents: [
             {
+              role: "user",
               parts: [
                 {
-                  text: "Write a short, calm introduction (2–3 sentences) for a public tool that encourages people to reflect before sharing information. Respond in the same language as user input. Keep it neutral and gentle."
+                  text: "Please generate the introduction."
                 }
               ]
             }
@@ -20,12 +35,15 @@ export default async function handler(req, res) {
     );
 
     const data = await response.json();
-    const intro = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+
+    const intro =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "This tool encourages calm reflection before sharing information.";
 
     res.json({ intro });
 
   } catch (error) {
+    console.error("Intro API error:", error);
     res.status(500).json({
       intro: "The introduction service is temporarily unavailable."
     });

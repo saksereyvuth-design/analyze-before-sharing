@@ -18,41 +18,47 @@ export default async function handler(req, res) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: text
-                }
-              ]
-            }
-          ],
-          systemInstruction: {
-            role: "system",
+          // SYSTEM PROMPT (correct placement)
+          system_instruction: {
             parts: [
               {
                 text: `
 You are a calm, neutral information analyzer.
-Respond in the same language as the user's input.
+Respond entirely in the same language as the user's input.
 Do not say whether something is true or false.
 Analyze tone, clarity, source signals, verifiability, and offer reflection prompts.
 Keep the tone respectful and gentle.
                 `
               }
             ]
-          }
+          },
+
+          // USER CONTENT (correct format)
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: text
+                }
+              ]
+            }
+          ]
         })
       }
     );
 
     const data = await response.json();
 
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+    // SAFE extraction of Gemini response
+    const content =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "The analysis service is temporarily unavailable.";
 
     res.json({ result: content });
 
   } catch (error) {
+    console.error("Gemini API error:", error);
     res.status(500).json({
       result: "The analysis service is temporarily unavailable."
     });
