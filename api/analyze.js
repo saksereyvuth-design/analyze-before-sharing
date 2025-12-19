@@ -48,7 +48,13 @@ Keep tone gentle and de-escalating.
     });
 
     const data = await response.json();
-    return res.json({ result: data });
+
+    // Extract **only** the AI text
+    const aiText =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No analysis returned.";
+
+    return res.json({ result: aiText });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
