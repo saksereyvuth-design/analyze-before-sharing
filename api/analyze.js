@@ -7,7 +7,8 @@ export default async function handler(req, res) {
 
   if (!text || text.length < 10) {
     return res.json({
-      result: "The provided text is too short to analyze meaningfully. Please provide more context."
+      result:
+        "The provided text is too short to analyze meaningfully. Please provide more context."
     });
   }
 
@@ -26,11 +27,11 @@ export default async function handler(req, res) {
               {
                 text: `
 You are a calm, neutral information analyzer.
-Respond entirely in the same language the user wrote.
-Do NOT claim something is true or false.
-Analyze tone, clarity, source signals, emotional triggers, and reflection prompts.
+Respond in the same language the user writes.
+Do NOT verify facts. 
+Focus on tone, clarity, emotional influence, and reflection.
 Keep tone gentle, neutral, and de-escalating.
-              `
+                `
               }
             ]
           },
@@ -43,9 +44,9 @@ Keep tone gentle, neutral, and de-escalating.
           ],
 
           generationConfig: {
-            temperature: 0.3,
-            topK: 40,
-            topP: 0.95
+            temperature: 0.4,
+            topP: 0.9,
+            topK: 40
           },
 
           safetySettings: [
@@ -60,19 +61,16 @@ Keep tone gentle, neutral, and de-escalating.
     );
 
     const data = await response.json();
+    console.log("GEMINI RAW RESPONSE:", JSON.stringify(data, null, 2));
 
-    console.log("Gemini response:", data); // helpful for debugging
-
-    // Extract Gemini text safely
-    const content =
+    const output =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "Unable to analyze the text right now.";
 
-    res.json({ result: content });
-
+    return res.json({ result: output });
   } catch (error) {
-    console.error("Gemini API error:", error);
-    res.status(500).json({
+    console.error("Gemini API Error:", error);
+    return res.status(500).json({
       result: "The analysis service is temporarily unavailable."
     });
   }
